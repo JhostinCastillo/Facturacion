@@ -1,0 +1,52 @@
+{
+    "materiales": {
+        "PLA": {
+            "0-20g": 3.0,
+            "21-200g": 2.75,
+            "201-400g": 2.5,
+            "401-1000g": 2.25
+        },
+        "PETg": {
+            "0-20g": 3.1,
+            "21-200g": 2.8,
+            "201-400g": 2.6,
+            "401-1000g": 2.3
+        },
+        "TPU": {
+            "0-20g": 4.0,
+            "21-200g": 3.75,
+            "201-400g": 3.5,
+            "401-1000g": 3.0
+        },
+        "ASA": {
+            "0-20g": 5.0,
+            "21-200g": 4.5,
+            "201-400g": 4.0,
+            "401-1000g": 3.5
+        }
+    },
+    "tiempo": {
+        "0-10h": 7.0,
+        "11-20h": 6.5,
+        "21-30h": 6.0,
+        "mas de 31h": 5.5
+    },
+    "mano_de_obra": {
+        "0-20g": 0.75,
+        "21-200g": 0.5,
+        "201-400g": 0.4,
+        "401-1000g": 0.3
+    },
+    "margen_perdida": {
+        "0-20g": 0.05,
+        "21-200g": 0.1,
+        "201-400g": 0.15,
+        "401-1000g": 0.2
+    },
+    "coste_maquina": 0.15,
+    "path": "C:\\Users\\jhost\\OneDrive\\Escritorio\\facturas",
+    "Texto de publicidad": "\u00a1En GabyTroniX Tambi\u00e9n Fabricamos PCBs!",
+    "Ruta de imagen de publicidad": "imagenes\\pcbs.png",
+    "Tamanio": 10,
+    "TamanioTXTPublicidad": 24
+}
