@@ -44,7 +44,7 @@
         "401-1000g": 0.2
     },
     "coste_maquina": 0.15,
-    "Texto de publicidad": "/u00a1En GabyTroniX Tambi/u00e9n Fabricamos PCBs!",
+    "Texto de publicidad": "!En GabyTroniX También Fabricamos PCBs!",
     "Ruta de imagen de publicidad": "imagenes/pcbs.png",
     "Tamanio": 10,
     "TamanioTXTPublicidad": 24

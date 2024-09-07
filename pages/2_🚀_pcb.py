@@ -51,7 +51,7 @@ def calcular_precios(tipopcb,hoyos,x,y,tiempo,config):
     else:
         coste_consumible = consumible[9] + (5 * config["slice"][tipopcb]["multiplicador_consumible"])
     
-    coste_obra = (coste_hoyos + coste_tiempo + coste_mm2) * config["slice"][slice]["obra"]
+    coste_obra = (coste_hoyos + coste_tiempo + coste_mm2) * config["slice"][tipopcb]["obra"]
     coste_error = (coste_consumible + coste_hoyos + coste_mm2) * config["error"]
 
     subtotal = coste_consumible + coste_error + coste_hoyos + coste_mm2 + coste_tiempo + coste_obra
@@ -170,7 +170,7 @@ for i, articulo in enumerate(st.session_state['articulos']):
         st.image(articulo['imagen_pcb'], caption='Imagen de la PCB')
 
 total = sum([item["subtotal"] for item in st.session_state['articulos']])
-st.write(f"**Total a pagar: {total} DOP**")
+totaldesc = st.number_input(f"Total a pagar {total}DOP",value=total)
 
 
 def ajustar_imagen(imagen_path, max_width, max_height):
@@ -263,7 +263,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     content.append(Paragraph(f"Fecha: {cliente['fecha']}", style_left))
     content.append(Paragraph(f"Número de Pedido: {cliente['numero_pedido']}", style_left))
     content.append(Paragraph(f"Número de Modelados: {cliente['numero_pcbs']}", style_left))
-    content.append(Paragraph(f"<b>Total: {round(total,2)} DOP</b>", style_left))
+    content.append(Paragraph(f"<b>Total neto: {round(totaldesc,2)} DOP</b>", style_left))
     content.append(Spacer(1, 12))
 
     separador1_path = "imagenes/separador3.png"
@@ -286,16 +286,16 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
         content.append(Paragraph(f"<b>Artículo {i + 1}:</b>", style_left))
         content.append(Paragraph(f"<b>Tipo de PCB:</b> {tipo}", style_left))
         content.append(Paragraph(f"<b>Agujeros:</b> {articulo['hoyos']}", style_left))
-        content.append(Paragraph(f"<b>Tiempo de fabricación:</b> {articulo['tiempo']}h", style_left))
-        content.append(Paragraph(f"<b>Tamaño en X:</b> {articulo['x']}", style_left))
-        content.append(Paragraph(f"<b>Tamaño en Y:</b> {articulo['y']}", style_left))
-        content.append(Paragraph(f"<b>Coste en mm2:</b> {articulo['total_mm2']} DOP", style_left))
-        content.append(Paragraph(f"<b>Coste en agujero:</b> {articulo['total_hoyos']} DOP", style_left))
-        content.append(Paragraph(f"<b>Coste en tiempo:</b> {articulo['total_tiempo']} DOP", style_left))
-        content.append(Paragraph(f"<b>Coste en consumibles:</b> {articulo['total_consumible']} DOP", style_left))
-        content.append(Paragraph(f"<b>Coste en obra:</b> {articulo['total_obra']} DOP", style_left))
-        content.append(Paragraph(f"<b>Coste Máquina:</b> {articulo['coste_maquina']} DOP", style_left))
-        content.append(Paragraph(f"<b>Margen de error:</b> {articulo['margen_error']} DOP", style_left))
+        content.append(Paragraph(f"<b>Tiempo de fabricación:</b> {round(articulo['tiempo'],2)}h", style_left))
+        content.append(Paragraph(f"<b>Tamaño en X:</b> {round(articulo['x'],2)}", style_left))
+        content.append(Paragraph(f"<b>Tamaño en Y:</b> {round(articulo['y'],2)}", style_left))
+        content.append(Paragraph(f"<b>Coste en mm2:</b> {round(articulo['total_mm2'],2)} DOP", style_left))
+        content.append(Paragraph(f"<b>Coste en agujero:</b> {round(articulo['total_hoyos'],2)} DOP", style_left))
+        content.append(Paragraph(f"<b>Coste en tiempo:</b> {round(articulo['total_tiempo'],2)} DOP", style_left))
+        content.append(Paragraph(f"<b>Coste en consumibles:</b> {round(articulo['total_consumible'],2)} DOP", style_left))
+        content.append(Paragraph(f"<b>Coste en obra:</b> {round(articulo['total_obra'],2)} DOP", style_left))
+        content.append(Paragraph(f"<b>Coste Máquina:</b> {round(articulo['coste_maquina'],2)} DOP", style_left))
+        content.append(Paragraph(f"<b>Margen de error:</b> {round(articulo['margen_error'],2)} DOP", style_left))
         content.append(Paragraph(f"<b>Subtotal: {round(articulo['subtotal'],2)} DOP</b>", style_left))
         content.append(Spacer(1, 12))
 
@@ -307,7 +307,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
             separador1 = Image(separador1_path, width=separador1_width, height=separador1_height)
             content.append(separador1)
 
-    content.append(Paragraph(f"<b>Total: {round(total,2)} DOP</b>", style_left))
+    content.append(Paragraph(f"<b>Total bruto: {round(total,2)} DOP</b>", style_left))
 
     separador1_path = "imagenes/separador4.png"
     if os.path.exists(separador1_path):
