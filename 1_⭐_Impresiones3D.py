@@ -20,7 +20,7 @@ def guardar_configuracion(config):
     with open("config/config.json", "w") as file:
         json.dump(config, file, indent=4)
 
-def calcular_precios(tipo_material, peso, tiempo, coste_diseno, config):
+def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
     if peso <= 20:
         coste_material = config['materiales'][tipo_material]['0-20g']
     elif peso <= 200:
@@ -64,7 +64,7 @@ def calcular_precios(tipo_material, peso, tiempo, coste_diseno, config):
 
     coste_maquina = (total_material + total_tiempo + mano_obra + coste_diseno + margen_error) * config['coste_maquina']
 
-    subtotal = total_material + total_tiempo + mano_obra + coste_diseno + margen_error + coste_maquina
+    subtotal = total_material + total_tiempo + mano_obra + coste_diseno + margen_error + coste_maquina + extra
 
     return {
         "coste_material": coste_material,
@@ -134,7 +134,7 @@ with st.form(key='form_articulo'):
     submit_button = st.form_submit_button(label="Guardar Artículo")
 
     if submit_button:
-        precios = calcular_precios(tipo_material, peso, tiempo, coste_diseno, config)
+        precios = calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config)
         articulo = {
             "tipo_material": tipo_material,
             "peso": peso,
@@ -374,8 +374,7 @@ def main():
             "contacto": contacto,
             "fecha": fecha,
             "numero_pedido": numero_pedido,
-            "numero_modelados": numero_modelados,
-            "extra": extra
+            "numero_modelados": numero_modelados
         }
 
         imagenes_pcb = [
