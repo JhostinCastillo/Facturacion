@@ -44,9 +44,9 @@
         "401-1000g": 0.2
     },
     "coste_maquina": 0.15,
-    "path": "C:\\Users\\jhost\\OneDrive\\Escritorio\\facturas",
-    "Texto de publicidad": "\u00a1En GabyTroniX Tambi\u00e9n Fabricamos PCBs!",
-    "Ruta de imagen de publicidad": "imagenes\\pcbs.png",
+    "path": "C:/Users/jhost/OneDrive/Escritorio/facturas",
+    "Texto de publicidad": "/u00a1En GabyTroniX Tambi/u00e9n Fabricamos PCBs!",
+    "Ruta de imagen de publicidad": "imagenes/pcbs.png",
     "Tamanio": 10,
     "TamanioTXTPublicidad": 24
 }

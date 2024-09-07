@@ -111,7 +111,7 @@ if st.sidebar.button("Guardar configuraciones"):
     guardar_configuracion(config)
     st.sidebar.success("Configuraciones guardadas correctamente")
 
-st.image("imagenes\logopng.png",width=200,)
+st.image("imagenes/logopng.png",width=200,)
 
 st.header("Facturar impresiones 3D")
 nombre = st.text_input("Nombre del Cliente")
@@ -247,13 +247,13 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
         logo = Image(logo_path, width=logo_width, height=logo_height)
         content.append(logo)
 
-    gracias_path = "imagenes\gracias.png"
+    gracias_path = "imagenes/gracias.png"
     if os.path.exists(gracias_path):
         gracias_width, gracias_height = ajustar_imagen(gracias_path, 3*inch, 3*inch)
         gracias = Image(gracias_path, width=gracias_width, height=gracias_height)
         content.append(gracias)
     
-    separador1_path = "imagenes\separador1.png"
+    separador1_path = "imagenes/separador1.png"
     if os.path.exists(separador1_path):
         separador1_width, separador1_height = ajustar_imagen(separador1_path, 10*inch, 10*inch)
         separador1 = Image(separador1_path, width=separador1_width, height=separador1_height)
@@ -263,7 +263,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     content.append(Paragraph("IG: @gabytronicx WS: 809-884-9764", times_new_roman))
     content.append(Paragraph("<b>Impresión 3D</b>", times_new_roman))
 
-    separador1_path = "imagenes\separador2.png"
+    separador1_path = "imagenes/separador2.png"
     if os.path.exists(separador1_path):
         separador1_width, separador1_height = ajustar_imagen(separador1_path, 10*inch, 10*inch)
         separador1 = Image(separador1_path, width=separador1_width, height=separador1_height)
@@ -279,7 +279,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     content.append(Paragraph(f"<b>Total: {round(total,2)} DOP</b>", style_left))
     content.append(Spacer(1, 12))
 
-    separador1_path = "imagenes\separador3.png"
+    separador1_path = "imagenes/separador3.png"
     if os.path.exists(separador1_path):
         separador1_width, separador1_height = ajustar_imagen(separador1_path, 10*inch, 10*inch)
         separador1 = Image(separador1_path, width=separador1_width, height=separador1_height)
@@ -321,7 +321,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
 
     content.append(Paragraph(f"<b>Total: {round(total,2)} DOP</b>", style_left))
 
-    separador1_path = "imagenes\separador4.png"
+    separador1_path = "imagenes/separador4.png"
     if os.path.exists(separador1_path):
         separador1_width, separador1_height = ajustar_imagen(separador1_path, 10*inch, 10*inch)
         separador1 = Image(separador1_path, width=separador1_width, height=separador1_height)
@@ -395,7 +395,7 @@ def main():
         <div class="spacer"></div>
         """, unsafe_allow_html=True)
 
-    lottie_file_path = "lottie\lottie.json"  
+    lottie_file_path = "lottie/lottie.json"  
     lottie_data = load_lottie_file(lottie_file_path)
     st_lottie(lottie_data, speed=1, width=600, height=400, key="lottie_animation")
     st.write("Nada que buscar por acá :)")
