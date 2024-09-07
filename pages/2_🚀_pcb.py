@@ -355,8 +355,8 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     except PermissionError:
         st.error("Ya existe una factura con ese número de pedido :(")
     
-    except Exception as e:
-        st.error(f"Se produjo un error inesperado: {e}")
+    # except Exception as e:
+    #     st.error(f"Se produjo un error inesperado: {e}")
 
     if exito:
         st.success("PDF generado correctamente :)") 
