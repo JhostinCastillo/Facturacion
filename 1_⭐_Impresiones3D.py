@@ -114,6 +114,7 @@ if st.sidebar.button("Guardar configuraciones"):
 st.image("imagenes/logopng.png",width=200,)
 
 st.header("Facturar impresiones 3D")
+st.write(type(config["TamanioTXTPublicidad"]))
 nombre = st.text_input("Nombre del Cliente")
 apellido = st.text_input("Apellido")
 contacto = st.text_input("Contacto")
@@ -350,7 +351,6 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
 
     exito = False
     try:
-        st.write(type(config["TamanioTXTPublicidad"]))
         doc.build(content)
         exito = True
 
