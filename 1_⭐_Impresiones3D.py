@@ -8,6 +8,7 @@ from reportlab.lib.units import inch
 from reportlab.lib import colors
 from PIL import Image as PILImage
 import os
+from io import BytesIO
 
 st.set_page_config(page_title="Impresiones 3D", page_icon="⭐")
 
@@ -197,25 +198,16 @@ def ajustar_imagen(imagen_path, max_width, max_height):
 
 def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     
-    ruta_completa = os.path.join(config['path'], nombre_archivo)
+    buffer = io.BytesIO()
 
-    if not os.path.exists(config['path']):
-        try:
-            os.makedirs(config['path'])
-        except Exception as e:
-            st.error("Hay algo mal con esa ruta, revisa bien.")
-    
-    if os.path.exists(ruta_completa):
-        return st.error("Ya existe una factura con ese número de pedido en esa ruta :(")
-
-    doc = SimpleDocTemplate(ruta_completa, pagesize=letter)
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
     styles = getSampleStyleSheet()
     
     fsize = int(config["TamanioTXTPublicidad"])
     times_new_roman = ParagraphStyle(
         name='TimesNewRoman',
         fontName='Times-Roman',
-        fontSize=fsize,
+        fontSize=24,
         leading=30,
         alignment=1,  
         parent=styles['Normal']
@@ -224,7 +216,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     times_new_roman_italic = ParagraphStyle(
         name='Times-Italic',
         fontName='Times-Italic',
-        fontSize= 24, #int(config["TamanioTXTPublicidad"]),
+        fontSize= fsize,
         leading=30,
         alignment=1,  
         textColor=colors.HexColor("#72B22D"), 
@@ -349,18 +341,25 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
         pcb_table.setStyle(TableStyle([('ALIGN', (0, 0), (-1, -1), 'CENTER')]))
         content.append(pcb_table)
 
-    exito = False
+exito = False
     try:
         doc.build(content)
         exito = True
-
     except PermissionError:
         st.error("Ya existe una factura con ese número de pedido :(")
-    
-    # except Exception as e:
-    #     st.error(f"Se produjo un error inesperado: {e}")
+    except Exception as e:
+        st.error(f"Se produjo un error inesperado: {e}")
 
     if exito:
+        buffer.seek(0)
+
+        st.download_button(
+            label="Descargar PDF",
+            data=buffer,
+            file_name=nombre_archivo, 
+            mime="application/pdf"
+        )
+
         st.success("PDF generado correctamente :)") 
 
 def main():
