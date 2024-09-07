@@ -99,9 +99,6 @@ for idx, (rango, porcentaje) in enumerate(config['margen_perdida'].items()):
     st.sidebar.write(f"### Margen de Pérdida ({rango})")
     config['margen_perdida'][rango] = st.sidebar.number_input(f"Porcentaje de Margen de Pérdida ({rango})", value=porcentaje)
 
-st.sidebar.write(f"### Ruta para guardar facturas")
-config["path"] = st.sidebar.text_input("Ruta para guardar factura", value= config["path"])
-
 st.sidebar.write(f"### Publicidad")
 config["Texto de publicidad"] = st.sidebar.text_input("Marketing nivel Dios", value= config["Texto de publicidad"])
 im_publicidad = st.sidebar.file_uploader("Subir una imagen diferente para la publicidad, por defecto se pondrán las PCBs de siempre", type=["png", "jpg"], key="publicidad")

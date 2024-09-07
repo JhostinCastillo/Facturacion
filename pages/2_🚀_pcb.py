@@ -95,9 +95,6 @@ config['consumible'] = st.sidebar.number_input(f"Coste de consumible = {config['
 st.sidebar.write("### Porcentaje de error")
 config['error'] = st.sidebar.number_input("Porcentaje de error", value= config['error'])                                        
 
-st.sidebar.write(f"### Ruta para guardar facturas")
-config["path"] = st.sidebar.text_input("Ruta para guardar factura", value= config["path"])
-
 st.sidebar.write(f"### Publicidad")
 config["Texto de publicidad"] = st.sidebar.text_input("Marketing nivel Dios", value= config["Texto de publicidad"])
 im_publicidad = st.sidebar.file_uploader("Subir una imagen diferente para la publicidad, por defecto se pondrán las PCBs de siempre", type=["png", "jpg"], key="publicidad")
