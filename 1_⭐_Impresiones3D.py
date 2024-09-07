@@ -114,7 +114,6 @@ if st.sidebar.button("Guardar configuraciones"):
 st.image("imagenes/logopng.png",width=200,)
 
 st.header("Facturar impresiones 3D")
-st.write(type(int(config["TamanioTXTPublicidad"])))
 nombre = st.text_input("Nombre del Cliente")
 apellido = st.text_input("Apellido")
 contacto = st.text_input("Contacto")
@@ -212,10 +211,11 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     doc = SimpleDocTemplate(ruta_completa, pagesize=letter)
     styles = getSampleStyleSheet()
     
+    fsize = int(config["TamanioTXTPublicidad"])
     times_new_roman = ParagraphStyle(
         name='TimesNewRoman',
         fontName='Times-Roman',
-        fontSize=24,
+        fontSize=fsize,
         leading=30,
         alignment=1,  
         parent=styles['Normal']
