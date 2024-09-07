@@ -8,7 +8,7 @@ from reportlab.lib.units import inch
 from reportlab.lib import colors
 from PIL import Image as PILImage
 import os
-from io import BytesIO
+import io 
 
 st.set_page_config(page_title="PCBs", page_icon="🚀")
 
