@@ -127,6 +127,7 @@ with st.form(key='form_articulo'):
     peso = st.number_input("Peso (gramos)", min_value=0.0, key="peso")
     tiempo = st.number_input("Tiempo de Impresión (horas)", min_value=0.0, key="tiempo")
     coste_diseno = st.number_input("Coste por Diseño (DOP)", min_value=0.0, key="diseno")
+    extra = st.number_input("Extra", min_value=0.0, key="extra")
     imagen_modelo = st.file_uploader("Subir Imagen del Modelo (PNG/JPG)", type=["png", "jpg"], key="modelo")
     imagen_impresion = st.file_uploader("Subir Imagen de la Impresión (PNG/JPG)", type=["png", "jpg"], key="impresion")
 
@@ -165,6 +166,7 @@ for i, articulo in enumerate(st.session_state['articulos']):
     st.write(f"Coste Mano de Obra: {round(articulo['mano_obra'],2)} DOP")
     st.write(f"Margen de Error: {round(articulo['margen_error'],2)} DOP")
     st.write(f"Coste Máquina: {round(articulo['coste_maquina'],2)} DOP")
+    st.write(f"Extra: {articulo['extra']} DOP")
     st.write(f"Subtotal: {round(articulo['subtotal'],2)} DOP")
 
     if articulo['imagen_modelo']:
@@ -289,6 +291,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
         content.append(Paragraph(f"<b>Coste Mano de Obra:</b> {round(articulo['mano_obra'],2)} DOP", style_left))
         content.append(Paragraph(f"<b>Margen de Error:</b> {round(articulo['margen_error'],2)} DOP", style_left))
         content.append(Paragraph(f"<b>Coste Máquina:</b> {round(articulo['coste_maquina'],2)} DOP", style_left))
+        content.append(Paragraph(f"<b>Extra: {round(cliente['extra'],2)} DOP</b>", style_left))
         content.append(Paragraph(f"<b>Subtotal: {round(articulo['subtotal'],2)} DOP</b>", style_left))
         content.append(Spacer(1, 12))
 
@@ -370,7 +373,8 @@ def main():
             "contacto": contacto,
             "fecha": fecha,
             "numero_pedido": numero_pedido,
-            "numero_modelados": numero_modelados
+            "numero_modelados": numero_modelados,
+            "extra": extra
         }
 
         imagenes_pcb = [
