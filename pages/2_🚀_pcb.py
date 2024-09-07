@@ -320,7 +320,8 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     content.append(Paragraph(f"<b>{txt_publicidad}</b>", times_new_roman_italic))
  
     if im_publicidad:
-        separador1_width, separador1_height = ajustar_imagen(im_publicidad, config["Tamanio"]*inch, config["Tamanio"]*inch)
+        tamanio = int(config["Tamanio"])
+        separador1_width, separador1_height = ajustar_imagen(im_publicidad, tamanio*inch, tamanio*inch)
         separador1 = Image(im_publicidad, width=separador1_width, height=separador1_height)
         content.append(separador1)
     else:
