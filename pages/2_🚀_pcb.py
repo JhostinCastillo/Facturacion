@@ -20,7 +20,7 @@ def guardar_configuracion(config):
     with open("config/configpcb.json", "w") as file:
         json.dump(config, file, indent=4)
 
-def calcular_precios(tipopcb,hoyos,x,y,tiempo,config):
+def calcular_precios(tipopcb,hoyos,x,y,tiempo, extra, config):
     
     coste_mm2 = (x*y) * config["slice"][tipopcb]["mm2"]
     coste_hoyos = hoyos * config["hoyos"]
@@ -57,7 +57,7 @@ def calcular_precios(tipopcb,hoyos,x,y,tiempo,config):
     subtotal = coste_consumible + coste_error + coste_hoyos + coste_mm2 + coste_tiempo + coste_obra
 
     coste_maquina = subtotal * config["maquina"]
-    subtotal = subtotal + (coste_maquina)
+    subtotal = subtotal + (coste_maquina) + extra
 
     return {
         "coste_mm2": config["slice"][tipopcb]["mm2"],
@@ -124,19 +124,20 @@ with st.form(key='form_articulo'):
     tiempo = st.number_input("Tiempo de fabricación (horas)", min_value=0.0, value= 1.0,key="tiempo")
     x = st.number_input("Tamaño de x (mm)", min_value=0.0, key="x")
     y = st.number_input("Tamaño de y (mm)", min_value=0.0, key="y")
-    extra = st.number_input("Extra", min_value=0.0, key="extra")
+    extra = st.number_input("Coste extra", min_value=0.0, key="extra")
     imagen_pcb = st.file_uploader("Subir Imagen de la PCB (PNG/JPG)", type=["png", "jpg"], key="pcb")
 
     submit_button = st.form_submit_button(label="Guardar Artículo")
 
     if submit_button:
-        precios = calcular_precios(tipo_slice,hoyos,x,y,tiempo,config)
+        precios = calcular_precios(tipo_slice,hoyos,x,y,tiempo,extra,config)
         articulo = {
             "slice": tipo_slice,
             "hoyos": hoyos,
             "tiempo": tiempo,
             "x": x,
             "y": y,
+            "extra": extra,
             "imagen_pcb": imagen_pcb,
             **precios
         }
@@ -155,17 +156,17 @@ for i, articulo in enumerate(st.session_state['articulos']):
     st.subheader(f"Artículo {i + 1}")
     st.write(f"Tipo de PCB: {articulo['slice']}")
     st.write(f"Agujeros: {articulo['hoyos']}")
-    st.write(f"Tiempo de fabricación: {articulo['tiempo']}h")
-    st.write(f"Tamaño en X: {articulo['x']}")
-    st.write(f"Tamaño en Y: {articulo['y']}")
-    st.write(f"Coste en mm2: {articulo['total_mm2']} DOP")
-    st.write(f"Coste en agujero: {articulo['total_hoyos']} DOP")
-    st.write(f"Coste en tiempo: {articulo['total_tiempo']} DOP")
-    st.write(f"Coste en consumibles: {articulo['total_consumible']} DOP")
-    st.write(f"Coste en obra: {articulo['total_obra']} DOP")
-    st.write(f"Coste Máquina: {articulo['coste_maquina']} DOP")
-    st.write(f"Margen de error: {articulo['margen_error']} DOP")
-    st.write(f"Extra: {articulo['extra']} DOP")
+    st.write(f"Tiempo de fabricación: {round(articulo['tiempo'],2)}h")
+    st.write(f"Tamaño en X: {round(articulo['x'],2)}")
+    st.write(f"Tamaño en Y: {round(articulo['y'],2)}")
+    st.write(f"Coste en mm2: {round(articulo['total_mm2'],2)} DOP")
+    st.write(f"Coste en agujero: {round(articulo['total_hoyos'],2)} DOP")
+    st.write(f"Coste en tiempo: {round(articulo['total_tiempo'],2)} DOP")
+    st.write(f"Coste en consumibles: {round(articulo['total_consumible'],2)} DOP")
+    st.write(f"Coste en obra: {round(articulo['total_obra'],2)} DOP")
+    st.write(f"Coste Máquina: {round(articulo['coste_maquina'],2)} DOP")
+    st.write(f"Margen de error: {round(articulo['margen_error'],2)} DOP")
+    st.write(f"Coste Extra: {round(articulo['extra'],2)} DOP")
     st.write(f"Subtotal: {articulo['subtotal']} DOP")
 
     if articulo['imagen_pcb']:
@@ -298,7 +299,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
         content.append(Paragraph(f"<b>Coste en obra:</b> {round(articulo['total_obra'],2)} DOP", style_left))
         content.append(Paragraph(f"<b>Coste Máquina:</b> {round(articulo['coste_maquina'],2)} DOP", style_left))
         content.append(Paragraph(f"<b>Margen de error:</b> {round(articulo['margen_error'],2)} DOP", style_left))
-        content.append(Paragraph(f"<b>Extra: {round(cliente['extra'],2)} DOP</b>", style_left))
+        content.append(Paragraph(f"<b>Coste Extra:</b> {round(articulo['extra'],2)} DOP", style_left))
         content.append(Paragraph(f"<b>Subtotal: {round(articulo['subtotal'],2)} DOP</b>", style_left))
         content.append(Spacer(1, 12))
 
@@ -371,8 +372,7 @@ def main():
             "contacto": contacto,
             "fecha": fecha,
             "numero_pedido": numero_pedido,
-            "numero_pcbs": numero_pcbs,
-            "extra": extra
+            "numero_pcbs": numero_pcbs
         }
 
         imagenes_pcb = [
