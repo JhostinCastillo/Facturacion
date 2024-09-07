@@ -341,7 +341,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
         pcb_table.setStyle(TableStyle([('ALIGN', (0, 0), (-1, -1), 'CENTER')]))
         content.append(pcb_table)
 
-exito = False
+    exito = False
     try:
         doc.build(content)
         exito = True
