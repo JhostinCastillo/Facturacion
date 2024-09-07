@@ -20,7 +20,7 @@ def guardar_configuracion(config):
     with open("config/config.json", "w") as file:
         json.dump(config, file, indent=4)
 
-def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
+def calcular_precios(tipo_material, peso, tiempo, coste_diseno, config):
     if peso <= 20:
         coste_material = config['materiales'][tipo_material]['0-20g']
     elif peso <= 200:
@@ -64,7 +64,7 @@ def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
 
     coste_maquina = (total_material + total_tiempo + mano_obra + coste_diseno + margen_error) * config['coste_maquina']
 
-    subtotal = total_material + total_tiempo + mano_obra + coste_diseno + margen_error + coste_maquina + extra
+    subtotal = total_material + total_tiempo + mano_obra + coste_diseno + margen_error + coste_maquina
 
     return {
         "coste_material": coste_material,
@@ -74,7 +74,6 @@ def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
         "mano_obra": mano_obra,
         "margen_error": margen_error,
         "coste_maquina": coste_maquina,
-        "extra": extra,
         "subtotal": subtotal
     }
 
@@ -135,13 +134,12 @@ with st.form(key='form_articulo'):
     submit_button = st.form_submit_button(label="Guardar Artículo")
 
     if submit_button:
-        precios = calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config)
+        precios = calcular_precios(tipo_material, peso, tiempo, coste_diseno, config)
         articulo = {
             "tipo_material": tipo_material,
             "peso": peso,
             "tiempo": tiempo,
             "coste_diseno": coste_diseno,
-            "extra": extra,
             "imagen_modelo": imagen_modelo,
             "imagen_impresion": imagen_impresion
             **precios
@@ -168,8 +166,8 @@ for i, articulo in enumerate(st.session_state['articulos']):
     st.write(f"Coste Mano de Obra: {round(articulo['mano_obra'],2)} DOP")
     st.write(f"Margen de Error: {round(articulo['margen_error'],2)} DOP")
     st.write(f"Coste Máquina: {round(articulo['coste_maquina'],2)} DOP")
-    st.write(f"Extra: {articulo['extra']} DOP")
-    st.write(f"Subtotal: {round(articulo['subtotal'],2)} DOP")
+    st.write(f"Extra: {extra} DOP")
+    st.write(f"Subtotal: {round(articulo['subtotal'],2)+extra} DOP")
 
     if articulo['imagen_modelo']:
         st.image(articulo['imagen_modelo'], caption='Imagen del Modelo STL')
@@ -294,7 +292,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
         content.append(Paragraph(f"<b>Margen de Error:</b> {round(articulo['margen_error'],2)} DOP", style_left))
         content.append(Paragraph(f"<b>Coste Máquina:</b> {round(articulo['coste_maquina'],2)} DOP", style_left))
         content.append(Paragraph(f"<b>Extra: {round(cliente['extra'],2)} DOP</b>", style_left))
-        content.append(Paragraph(f"<b>Subtotal: {round(articulo['subtotal'],2)} DOP</b>", style_left))
+        content.append(Paragraph(f"<b>Subtotal: {round(articulo['subtotal'],2)+extra} DOP</b>", style_left))
         content.append(Spacer(1, 12))
 
         if articulo['imagen_modelo']:
