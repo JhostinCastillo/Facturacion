@@ -142,6 +142,7 @@ with st.form(key='form_articulo'):
             "coste_diseno": coste_diseno,
             "imagen_modelo": imagen_modelo,
             "imagen_impresion": imagen_impresion,
+            "extra": extra
             **precios
         }
         st.session_state['articulos'].append(articulo)
