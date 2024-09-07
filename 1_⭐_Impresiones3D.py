@@ -74,6 +74,7 @@ def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
         "mano_obra": mano_obra,
         "margen_error": margen_error,
         "coste_maquina": coste_maquina,
+        "extra": extra,
         "subtotal": subtotal
     }
 
