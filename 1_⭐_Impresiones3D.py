@@ -173,7 +173,7 @@ for i, articulo in enumerate(st.session_state['articulos']):
         st.image(articulo['imagen_impresion'], caption='Imagen de la Impresión')
 
 total = sum([item["subtotal"] for item in st.session_state['articulos']])
-totaldesc = st.number_input(f"Total a pagar {total}DOP",value=total)
+totaldesc = st.number_input(f"Total a pagar {round(total,2)}DOP",value=total)
 
 
 def ajustar_imagen(imagen_path, max_width, max_height):
