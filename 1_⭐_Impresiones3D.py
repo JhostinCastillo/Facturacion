@@ -350,7 +350,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
 
     exito = False
     try:
-        config["TamanioTXTPublicidad"]
+        type(config["TamanioTXTPublicidad"])
         doc.build(content)
         exito = True
 
