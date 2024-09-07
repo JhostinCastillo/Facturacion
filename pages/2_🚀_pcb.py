@@ -220,7 +220,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     times_new_roman_italic = ParagraphStyle(
         name='Times-Italic',
         fontName='Times-Italic',
-        fontSize= int(config["TamanioTXTPublicidad"]),
+        fontSize= 24, #int(config["TamanioTXTPublicidad"]),
         leading=30,
         alignment=1,  
         textColor=colors.HexColor("#72B22D"), 
@@ -348,7 +348,6 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
 
     exito = False
     try:
-
         doc.build(content)
         exito = True
 
