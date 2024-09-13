@@ -11,6 +11,7 @@ import os
 import io 
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
+import tempfile
 # Inicio de sesion y acceso a la API de gDrive
 
 credentials_module = {
@@ -43,13 +44,16 @@ directorio_credenciales = credentials_module
 # INICIAR SESION
 def login():
     gauth = GoogleAuth()
-    
-    # Usa el diccionario de configuración en lugar del archivo
-    gauth.settings['client_config'] = config_dict
 
-    # Configura las credenciales directamente si están disponibles en el diccionario
-    if 'access_token' in config_dict:
-        gauth.credentials = gauth._GetCredentialsFromConfigDict(config_dict)
+    # Crea un archivo temporal con las credenciales
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_file:
+        json.dump(credentials_module, temp_file, indent=4)
+        temp_file_path = temp_file.name
+
+    # Usa el archivo temporal para configurar las credenciales
+    gauth.DEFAULT_SETTINGS['client_config_file'] = temp_file_path
+
+    gauth.LoadCredentialsFile(temp_file_path)
     
     if gauth.credentials is None:
         gauth.LocalWebserverAuth(port_numbers=[8092])
@@ -58,7 +62,11 @@ def login():
     else:
         gauth.Authorize()
         
-    gauth.SaveCredentialsFile(directorio_credenciales)  # Opcional, si quieres guardar las credenciales
+    gauth.SaveCredentialsFile(temp_file_path)  # Opcional, si quieres guardar las credenciales
+    
+    # Elimina el archivo temporal si ya no es necesario
+    os.remove(temp_file_path)
+    
     return GoogleDrive(gauth)
 
 def cargar_configuracion_drive(id_archivo):
