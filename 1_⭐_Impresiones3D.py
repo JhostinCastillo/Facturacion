@@ -12,22 +12,48 @@ import io
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 import tempfile
-# Inicio de sesion y acceso a la API de gDrive
 
-def load_credentials():
-    with open('credentials.json', 'r') as file:
-        return json.load(file)
-
+# INICIAR SESION
 def login():
-    credentials = load_credentials()
     gauth = GoogleAuth()
 
-    # Usar el archivo JSON con las credenciales
-    gauth.DEFAULT_SETTINGS['client_config_file'] = 'credentials.json'
+    # Guarda las credenciales en un archivo temporal
+    credentials = {
+        "access_token": st.secrets["access_token"],
+        "client_id": st.secrets["client_id"],
+        "client_secret": st.secrets["client_secret"],
+        "refresh_token": st.secrets["refresh_token"],
+        "token_expiry": st.secrets["token_expiry"],
+        "token_uri": st.secrets["token_uri"],
+        "user_agent": None,
+        "revoke_uri": st.secrets["revoke_uri"],
+        "id_token": None,
+        "id_token_jwt": None,
+        "token_response": {
+            "access_token": st.secrets["token_response"]["access_token"],
+            "expires_in": st.secrets["token_response"]["expires_in"],
+            "refresh_token": st.secrets["token_response"]["refresh_token"],
+            "scope": st.secrets["token_response"]["scope"],
+            "token_type": st.secrets["token_response"]["token_type"],
+        },
+        "scopes": st.secrets["scopes"],
+        "token_info_uri": st.secrets["token_info_uri"],
+        "invalid": st.secrets["invalid"],
+        "_class": st.secrets["_class"],
+        "_module": st.secrets["_module"]
+    }
 
-    # Cargar las credenciales desde el archivo JSON
-    gauth.LoadCredentialsFile('credentials.json')
+    # Crea un archivo temporal con las credenciales
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_file:
+        json.dump(credentials, temp_file, indent=4)
+        temp_file_path = temp_file.name
 
+    # Configura el archivo de credenciales en GoogleAuth
+    gauth.DEFAULT_SETTINGS['client_config_file'] = temp_file_path
+
+    # Carga las credenciales desde el archivo temporal
+    gauth.LoadCredentialsFile(temp_file_path)
+    
     if gauth.credentials is None:
         gauth.LocalWebserverAuth(port_numbers=[8092])
     elif gauth.access_token_expired:
@@ -35,10 +61,9 @@ def login():
     else:
         gauth.Authorize()
         
-    gauth.SaveCredentialsFile('credentials.json')  # Opcional, si quieres guardar las credenciales
-
-    return GoogleDrive(gauth)
-        
+    # Elimina el archivo temporal si ya no es necesario
+    os.remove(temp_file_path)
+    
     return GoogleDrive(gauth)
 
 def cargar_configuracion_drive(id_archivo):
@@ -82,14 +107,14 @@ def guardar_json_drive(json_data, id_folder):
 
 def cargar_imagen_drive(id_imagen):
     # Inicializa la autenticación y credenciales
-    drive = login()
+    credenciales = login()
 
     # Descargar la imagen desde Google Drive
-    imagen = drive.CreateFile({'id': id_imagen})
-    imagen.GetContentFile('imagen_temporal.png')  # Guardar la imagen en un archivo temporal
+    imagen = credenciales.CreateFile({'id': id_imagen})
+    imagen_data = io.BytesIO(imagen.GetContentString())  # Descargar como texto y convertir a bytes
 
-    # Cargar la imagen en la aplicación
-    img = Image.open('imagen_temporal.png')
+    # Cargar la imagen en la aplicación (puedes mostrarla en Streamlit)
+    img = Image.open(imagen_data)
 
     return img
 
