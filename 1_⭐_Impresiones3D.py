@@ -42,9 +42,14 @@ directorio_credenciales = credentials_module
 
 # INICIAR SESION
 def login():
-    GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = directorio_credenciales
     gauth = GoogleAuth()
-    gauth.LoadCredentialsFile(directorio_credenciales)
+    
+    # Usa el diccionario de configuración en lugar del archivo
+    gauth.settings['client_config'] = config_dict
+
+    # Configura las credenciales directamente si están disponibles en el diccionario
+    if 'access_token' in config_dict:
+        gauth.credentials = gauth._GetCredentialsFromConfigDict(config_dict)
     
     if gauth.credentials is None:
         gauth.LocalWebserverAuth(port_numbers=[8092])
@@ -53,9 +58,8 @@ def login():
     else:
         gauth.Authorize()
         
-    gauth.SaveCredentialsFile(directorio_credenciales)
-    credenciales = GoogleDrive(gauth)
-    return credenciales
+    gauth.SaveCredentialsFile(directorio_credenciales)  # Opcional, si quieres guardar las credenciales
+    return GoogleDrive(gauth)
 
 def cargar_configuracion_drive(id_archivo):
     # Inicializa la autenticación y credenciales
