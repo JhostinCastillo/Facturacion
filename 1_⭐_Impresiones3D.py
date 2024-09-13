@@ -117,7 +117,7 @@ def guardar_imagen_drive(imagen_subida, id_folder):
     archivo_imagen.Upload()
 
     print(f"Imagen '{imagen_subida.name}' subida y reemplazada correctamente en Google Drive.")
-    
+
 # Pagina 
 st.set_page_config(page_title="Impresiones 3D", page_icon="⭐")
 
