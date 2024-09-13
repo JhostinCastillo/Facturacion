@@ -28,7 +28,7 @@ credentials_module = {
         "access_token": st.secrets["token_response"]["access_token"],
         "expires_in": st.secrets["token_response"]["expires_in"],
         "refresh_token": st.secrets["token_response"]["refresh_token"],
-        "scopes": st.secrets["token_response"]["scopes"],
+        "scope": st.secrets["token_response"]["scope"],
         "token_type": st.secrets["token_response"]["token_type"],
     },
     "scopes": st.secrets["scopes"],
