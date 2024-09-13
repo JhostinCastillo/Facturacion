@@ -9,16 +9,133 @@ from reportlab.lib import colors
 from PIL import Image as PILImage
 import os
 import io 
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
+# Inicio de sesion y acceso a la API de gDrive
 
+credentials_module = {
+    "access_token": st.secrets["access_token"],
+    "client_id": st.secrets["client_id"],
+    "client_secret": st.secrets["client_secret"],
+    "refresh_token": st.secrets["refresh_token"],
+    "token_expiry": st.secrets["token_expiry"],
+    "token_uri": st.secrets["token_uri"],
+    "user_agent": None,  # Puedes definirlo si es necesario
+    "revoke_uri": st.secrets["revoke_uri"],
+    "id_token": None,  # Puedes definirlo si es necesario
+    "id_token_jwt": None,  # Puedes definirlo si es necesario
+    "token_response": {
+        "access_token": st.secrets["token_response"]["access_token"],
+        "expires_in": st.secrets["token_response"]["expires_in"],
+        "refresh_token": st.secrets["token_response"]["refresh_token"],
+        "scope": st.secrets["token_response"]["scope"],
+        "token_type": st.secrets["token_response"]["token_type"],
+    },
+    "scopes": st.secrets["scopes"],
+    "token_info_uri": st.secrets["token_info_uri"],
+    "invalid": st.secrets["invalid"],
+    "_class": st.secrets["_class"],
+    "_module": st.secrets["_module"]
+}
+
+directorio_credenciales = credentials_module
+
+# INICIAR SESION
+def login():
+    GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = directorio_credenciales
+    gauth = GoogleAuth()
+    gauth.LoadCredentialsFile(directorio_credenciales)
+    
+    if gauth.credentials is None:
+        gauth.LocalWebserverAuth(port_numbers=[8092])
+    elif gauth.access_token_expired:
+        gauth.Refresh()
+    else:
+        gauth.Authorize()
+        
+    gauth.SaveCredentialsFile(directorio_credenciales)
+    credenciales = GoogleDrive(gauth)
+    return credenciales
+
+def cargar_configuracion_drive(id_archivo):
+    # Inicializa la autenticación y credenciales
+    credenciales = login()
+
+    # Busca el archivo en Google Drive por su ID
+    archivo = credenciales.CreateFile({'id': id_archivo})
+    archivo.GetContentFile('config.json')  # Descargar archivo temporalmente
+
+    # Cargar el contenido JSON
+    with open('config.json', 'r') as file:
+        config = json.load(file)
+
+    return config
+
+def guardar_json_drive(json_data, id_folder):
+    # Inicializa la autenticación y credenciales
+    drive = login()
+
+    # Buscar archivos existentes con el mismo nombre en la carpeta
+    archivo_existente = drive.ListFile({
+        'q': f"'{id_folder}' in parents and title='config.json' and trashed=false"
+    }).GetList()
+
+    # Eliminar el archivo existente si se encuentra uno
+    if archivo_existente:
+        archivo_existente[0].Delete()
+
+    # Crear el nuevo archivo JSON en Google Drive
+    archivo_json = drive.CreateFile({'parents': [{"kind": "drive#fileLink", "id": id_folder}]})
+    archivo_json['title'] = 'config.json'
+    
+    # Establecer el contenido JSON en el archivo
+    archivo_json.SetContentString(json.dumps(json_data))
+
+    # Subir el archivo JSON a Google Drive
+    archivo_json.Upload()
+
+    print("Archivo JSON subido y reemplazado correctamente en Google Drive.")
+
+def cargar_imagen_drive(id_imagen):
+    # Inicializa la autenticación y credenciales
+    credenciales = login()
+
+    # Descargar la imagen desde Google Drive
+    imagen = credenciales.CreateFile({'id': id_imagen})
+    imagen.GetContentFile('imagen.png')  # Guardar la imagen temporalmente
+
+    # Cargar la imagen en la aplicación (puedes mostrarla en Streamlit)
+    img = Image.open('imagen.png')
+
+    return img
+
+def guardar_imagen_drive(imagen_subida, id_folder):
+    # Inicializa la autenticación y credenciales
+    drive = login()
+
+    # Buscar archivos existentes con el mismo nombre en la carpeta
+    archivo_existente = drive.ListFile({
+        'q': f"'{id_folder}' in parents and title='{imagen_subida.name}' and trashed=false"
+    }).GetList()
+
+    # Eliminar el archivo existente si se encuentra uno
+    if archivo_existente:
+        archivo_existente[0].Delete()
+
+    # Crear el nuevo archivo de imagen en Google Drive
+    archivo_imagen = drive.CreateFile({'parents': [{"kind": "drive#fileLink", "id": id_folder}]})
+    archivo_imagen['title'] = imagen_subida.name
+
+    # Establecer el contenido del archivo de imagen desde el objeto UploadedFile
+    archivo_imagen.SetContentFile(imagen_subida)
+
+    # Subir la imagen a Google Drive
+    archivo_imagen.Upload()
+
+    print(f"Imagen '{imagen_subida.name}' subida y reemplazada correctamente en Google Drive.")
+
+# Pagina 
 st.set_page_config(page_title="PCBs", page_icon="🚀")
-
-def cargar_configuracion():
-    with open("config/configpcb.json", "r") as file:
-        return json.load(file)
-
-def guardar_configuracion(config):
-    with open("config/configpcb.json", "w") as file:
-        json.dump(config, file, indent=4)
 
 def calcular_precios(tipopcb,hoyos,x,y,tiempo, extra, config):
     
@@ -73,7 +190,8 @@ def calcular_precios(tipopcb,hoyos,x,y,tiempo, extra, config):
         "subtotal": subtotal
     }
 
-config = cargar_configuracion()
+config_id ="1WxzGnnuTL7ODSsIdIn86juh3gPUsD52L"
+config = cargar_configuracion_drive(config_id)
 
 st.sidebar.header("Configuraciones PCB")
 for slice in config['slice']:
@@ -97,12 +215,16 @@ config['error'] = st.sidebar.number_input("Porcentaje de error", value= config['
 
 st.sidebar.write(f"### Publicidad")
 config["Texto de publicidad"] = st.sidebar.text_input("Marketing nivel Dios", value= config["Texto de publicidad"])
-im_publicidad = st.sidebar.file_uploader("Subir una imagen diferente para la publicidad, por defecto se pondrán las PCBs de siempre", type=["png", "jpg"], key="publicidad")
+im_publicidad = st.sidebar.file_uploader("Subir una imagen diferente para la publicidad, por defecto se pondrán las PCBs de siempre", type=["png"], key="publicidad")
+if im_publicidad is not None:
+    carpeta_id = "1PbPkgMUPGdhvXeA2CIOu26knhafr_f7G"
+    im_publicidad.name = "publicidad.png"
+    guardar_imagen_drive(im_publicidad, carpeta_id)
 config["TamanioTXTPublicidad"] = st.sidebar.number_input("Tamaño del texto", value= config["TamanioTXTPublicidad"])
 config["Tamanio"] = st.sidebar.number_input("Tamaño de la imagen", value= config["Tamanio"])
 
 if st.sidebar.button("Guardar configuraciones"):
-    guardar_configuracion(config)
+    guardar_json_drive(config,config_id)
     st.sidebar.success("Configuraciones guardadas correctamente")
 
 st.image("imagenes/logopng.png",width=200,)
@@ -193,7 +315,7 @@ def ajustar_imagen(imagen_path, max_width, max_height):
         
         return new_width, new_height
 
-def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
+def generar_pdf(nombre_archivo, cliente, pedido, articulos, im_publicidad):
     
     buffer = io.BytesIO()
 
@@ -323,23 +445,17 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, imagenes_pcb):
     txt_publicidad = config["Texto de publicidad"]
     content.append(Paragraph(f"<b>{txt_publicidad}</b>", times_new_roman_italic))
  
-    if im_publicidad:
+    if im_publicidad is not None:
         tamanio = int(config["Tamanio"])
         separador1_width, separador1_height = ajustar_imagen(im_publicidad, tamanio*inch, tamanio*inch)
         separador1 = Image(im_publicidad, width=separador1_width, height=separador1_height)
         content.append(separador1)
     else:
-        pcb_images = []
-        for img_pcb in imagenes_pcb:
-            img_pcb_width, img_pcb_height = ajustar_imagen(img_pcb, 8*inch, 8*inch)
-            img_pcb_image = Image(img_pcb, width=img_pcb_width, height=img_pcb_height)
-            pcb_images.append(img_pcb_image)
-        
-        num_images_per_row = 2
-        rows = [pcb_images[i:i+num_images_per_row] for i in range(0, len(pcb_images), num_images_per_row)]
-        pcb_table = Table(rows)
-        pcb_table.setStyle(TableStyle([('ALIGN', (0, 0), (-1, -1), 'CENTER')]))
-        content.append(pcb_table)
+        im_publicidad = cargar_imagen_drive("1PbPkgMUPGdhvXeA2CIOu26knhafr_f7G")
+        tamanio = int(config["Tamanio"])
+        separador1_width, separador1_height = ajustar_imagen(im_publicidad, tamanio*inch, tamanio*inch)
+        separador1 = Image(im_publicidad, width=separador1_width, height=separador1_height)
+        content.append(separador1)
 
     exito = False
     try:
@@ -375,11 +491,7 @@ def main():
             "numero_pcbs": numero_pcbs
         }
 
-        imagenes_pcb = [
-            config["Ruta de imagen de publicidad"]
-        ]
-
-        generar_pdf(nombre_archivo, cliente, numero_pedido, st.session_state['articulos'], imagenes_pcb)
+        generar_pdf(nombre_archivo, cliente, numero_pedido, st.session_state['articulos'], im_publicidad)
     
     def load_lottie_file(filepath: str):
         with open(filepath, "r") as f:
