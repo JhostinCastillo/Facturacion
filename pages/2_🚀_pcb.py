@@ -11,49 +11,12 @@ import os
 import io 
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
-import tempfile
-# Inicio de sesion y acceso a la API de gDrive
 
-# INICIAR SESION
+secreto = st.secrets["credentials"]
 def login():
+    GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = secreto
     gauth = GoogleAuth()
-
-    # Guarda las credenciales en un archivo temporal
-    credentials = {
-        "access_token": st.secrets["access_token"],
-        "client_id": st.secrets["client_id"],
-        "client_secret": st.secrets["client_secret"],
-        "refresh_token": st.secrets["refresh_token"],
-        "token_expiry": st.secrets["token_expiry"],
-        "token_uri": st.secrets["token_uri"],
-        "user_agent": None,
-        "revoke_uri": st.secrets["revoke_uri"],
-        "id_token": None,
-        "id_token_jwt": None,
-        "token_response": {
-            "access_token": st.secrets["token_response"]["access_token"],
-            "expires_in": st.secrets["token_response"]["expires_in"],
-            "refresh_token": st.secrets["token_response"]["refresh_token"],
-            "scope": st.secrets["token_response"]["scope"],
-            "token_type": st.secrets["token_response"]["token_type"],
-        },
-        "scopes": st.secrets["scopes"],
-        "token_info_uri": st.secrets["token_info_uri"],
-        "invalid": st.secrets["invalid"],
-        "_class": st.secrets["_class"],
-        "_module": st.secrets["_module"]
-    }
-
-    # Crea un archivo temporal con las credenciales
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_file:
-        json.dump(credentials, temp_file, indent=4)
-        temp_file_path = temp_file.name
-
-    # Configura el archivo de credenciales en GoogleAuth
-    gauth.DEFAULT_SETTINGS['client_config_file'] = temp_file_path
-
-    # Carga las credenciales desde el archivo temporal
-    gauth.LoadCredentialsFile(temp_file_path)
+    gauth.LoadCredentialsFile(secreto)
     
     if gauth.credentials is None:
         gauth.LocalWebserverAuth(port_numbers=[8092])
@@ -62,10 +25,9 @@ def login():
     else:
         gauth.Authorize()
         
-    # Elimina el archivo temporal si ya no es necesario
-    os.remove(temp_file_path)
-    
-    return GoogleDrive(gauth)
+    gauth.SaveCredentialsFile(secreto)
+    credenciales = GoogleDrive(gauth)
+    return credenciales
 
 def cargar_configuracion_drive(id_archivo):
     # Inicializa la autenticación y credenciales
