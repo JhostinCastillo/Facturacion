@@ -143,6 +143,8 @@ config["TamanioTXTPublicidad"] = st.sidebar.number_input("Tamaño del texto", va
 config["Tamanio"] = st.sidebar.number_input("Tamaño de la imagen", value= config["Tamanio"])
 
 if st.sidebar.button("Guardar configuraciones"):
+    with open("config/config.json", "w") as archivo_json:
+        json.dump(config, archivo_json, indent=4)
     subir_archivo("config/configpcb.json","1cBIWZ9Xiw1Q5p2wxoVF7t-oL0gq7VqZW")
     st.sidebar.success("Configuraciones guardadas correctamente")
 
