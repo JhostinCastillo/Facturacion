@@ -11,14 +11,15 @@ import os
 import io 
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
-import tempfile
+from pydrive2.files import FileNotUploadedError
+
+credencialesjson = st.secrets["credenciales"]
 
 # INICIAR SESION
-secreto = st.secrets["credentials"]
 def login():
-    GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = secreto
+    GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = credencialesjson 
     gauth = GoogleAuth()
-    gauth.LoadCredentialsFile(secreto)
+    gauth.LoadCredentialsFile(credencialesjson)
     
     if gauth.credentials is None:
         gauth.LocalWebserverAuth(port_numbers=[8092])
@@ -27,86 +28,24 @@ def login():
     else:
         gauth.Authorize()
         
-    gauth.SaveCredentialsFile(secreto)
+    gauth.SaveCredentialsFile(credencialesjson)
     credenciales = GoogleDrive(gauth)
     return credenciales
 
-def cargar_configuracion_drive(id_archivo):
-    # Inicializa la autenticación y credenciales
+def subir_archivo(ruta_archivo,id_folder,):
     credenciales = login()
+    archivo = credenciales.CreateFile({'parents': [{"kind": "drive#fileLink",\
+                                                    "id": id_folder}]})
+    archivo['title'] = ruta_archivo.split('/')[-1]
+    archivo.SetContentFile(ruta_archivo)
+    archivo.Upload()
 
-    # Busca el archivo en Google Drive por su ID
-    archivo = credenciales.CreateFile({'id': id_archivo})
-    archivo.GetContentFile('config.json')  # Descargar archivo temporalmente
-
-    # Cargar el contenido JSON
-    with open('config.json', 'r') as file:
-        config = json.load(file)
-
-    return config
-
-def guardar_json_drive(json_data, id_folder):
-    # Inicializa la autenticación y credenciales
-    drive = login()
-
-    # Buscar archivos existentes con el mismo nombre en la carpeta
-    archivo_existente = drive.ListFile({
-        'q': f"'{id_folder}' in parents and title='config.json' and trashed=false"
-    }).GetList()
-
-    # Eliminar el archivo existente si se encuentra uno
-    if archivo_existente:
-        archivo_existente[0].Delete()
-
-    # Crear el nuevo archivo JSON en Google Drive
-    archivo_json = drive.CreateFile({'parents': [{"kind": "drive#fileLink", "id": id_folder}]})
-    archivo_json['title'] = 'config.json'
-    
-    # Establecer el contenido JSON en el archivo
-    archivo_json.SetContentString(json.dumps(json_data))
-
-    # Subir el archivo JSON a Google Drive
-    archivo_json.Upload()
-
-    print("Archivo JSON subido y reemplazado correctamente en Google Drive.")
-
-def cargar_imagen_drive(id_imagen):
-    # Inicializa la autenticación y credenciales
+# DESCARGAR UN ARCHIVO DE DRIVE POR ID
+def bajar_archivo(id_drive,ruta_descarga):
     credenciales = login()
-
-    # Descargar la imagen desde Google Drive
-    imagen = credenciales.CreateFile({'id': id_imagen})
-    imagen_data = io.BytesIO(imagen.GetContentString())  # Descargar como texto y convertir a bytes
-
-    # Cargar la imagen en la aplicación (puedes mostrarla en Streamlit)
-    img = Image.open(imagen_data)
-
-    return img
-
-def guardar_imagen_drive(imagen_subida, id_folder):
-    # Inicializa la autenticación y credenciales
-    drive = login()
-
-    # Buscar archivos existentes con el mismo nombre en la carpeta
-    archivo_existente = drive.ListFile({
-        'q': f"'{id_folder}' in parents and title='{imagen_subida.name}' and trashed=false"
-    }).GetList()
-
-    # Eliminar el archivo existente si se encuentra uno
-    if archivo_existente:
-        archivo_existente[0].Delete()
-
-    # Crear el nuevo archivo de imagen en Google Drive
-    archivo_imagen = drive.CreateFile({'parents': [{"kind": "drive#fileLink", "id": id_folder}]})
-    archivo_imagen['title'] = imagen_subida.name
-
-    # Establecer el contenido del archivo de imagen desde el objeto UploadedFile
-    archivo_imagen.SetContentFile(imagen_subida)
-
-    # Subir la imagen a Google Drive
-    archivo_imagen.Upload()
-
-    print(f"Imagen '{imagen_subida.name}' subida y reemplazada correctamente en Google Drive.")
+    archivo = credenciales.CreateFile({'id': id_drive}) 
+    nombre_archivo = archivo['title']
+    archivo.GetContentFile(ruta_descarga + nombre_archivo)
 
 # Pagina 
 st.set_page_config(page_title="Impresiones 3D", page_icon="⭐")
@@ -168,8 +107,9 @@ def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
         "subtotal": subtotal
     }
 
-config_id ="1WxzGnnuTL7ODSsIdIn86juh3gPUsD52L"
-config = cargar_configuracion_drive(config_id)
+config_id ="1re8SqtEPsPBeEcqfblZWUH4fyCO247Fi"
+bajar_archivo(config_id,"config\config.json")
+config = json.load("config\config.json")
 
 st.sidebar.header("Configuraciones impresiones3D")
 for material in config['materiales']:
@@ -195,15 +135,15 @@ st.sidebar.write(f"### Publicidad")
 config["Texto de publicidad"] = st.sidebar.text_input("Marketing nivel Dios", value= config["Texto de publicidad"])
 im_publicidad = st.sidebar.file_uploader("Subir una imagen diferente para la publicidad, por defecto se pondrán las PCBs de siempre", type=["png"], key="publicidad")
 if im_publicidad is not None:
-    carpeta_id = "1PbPkgMUPGdhvXeA2CIOu26knhafr_f7G"
-    im_publicidad.name = "publicidad.png"
-    guardar_imagen_drive(im_publicidad, carpeta_id)
+    carpeta_id = "1FjbvVgXGlSbW-vX4ja0lZ9buF1J9lN_F"
+    subir_archivo(im_publicidad,carpeta_id)
 config["TamanioTXTPublicidad"] = st.sidebar.text_input("Tamaño del texto", value= config["TamanioTXTPublicidad"])
 config["Tamanio"] = st.sidebar.text_input("Tamaño de la imagen", value= config["Tamanio"])
 
 if st.sidebar.button("Guardar configuraciones"):
-    guardar_json_drive(config,config_id)
+    subir_archivo("config\config.json","1re8SqtEPsPBeEcqfblZWUH4fyCO247Fi")
     st.sidebar.success("Configuraciones guardadas correctamente")
+
 
 st.image("imagenes/logopng.png",width=200,)
 
@@ -427,11 +367,13 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, im_publicidad):
         separador1 = Image(im_publicidad, width=separador1_width, height=separador1_height)
         content.append(separador1)
     else:
-        im_publicidad = cargar_imagen_drive("1PbPkgMUPGdhvXeA2CIOu26knhafr_f7G")
+        bajar_archivo("1FjbvVgXGlSbW-vX4ja0lZ9buF1J9lN_F","imagenes\publicidad.png")
+        im_publicidad = "imagenes\publicidad.png"
         tamanio = int(config["Tamanio"])
         separador1_width, separador1_height = ajustar_imagen(im_publicidad, tamanio*inch, tamanio*inch)
         separador1 = Image(im_publicidad, width=separador1_width, height=separador1_height)
         content.append(separador1)
+
 
     exito = False
     try:
