@@ -47,5 +47,6 @@
     "Texto de publicidad": "!En GabyTroniX También Fabricamos PCBs!",
     "Ruta de imagen de publicidad": "imagenes/pcbs.png",
     "Tamanio": 10,
-    "TamanioTXTPublicidad": 24
+    "TamanioTXTPublicidad": 24,
+    "dev":"jhostincastilloramirez@gmail.com"
 }
