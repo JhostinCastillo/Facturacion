@@ -107,8 +107,9 @@ def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
     }
 
 config_id ="1re8SqtEPsPBeEcqfblZWUH4fyCO247Fi"
-bajar_archivo(config_id, r"config/configpcb.json")
-config = json.load("config\config.json")
+bajar_archivo(config_id, r"config/config.json")
+with open(r"config/config.json", 'r') as archivo:
+    config = json.load(archivo) 
 
 st.sidebar.header("Configuraciones impresiones3D")
 for material in config['materiales']:

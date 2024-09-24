@@ -104,7 +104,8 @@ def calcular_precios(tipopcb,hoyos,x,y,tiempo, extra, config):
 
 config_id ="1WxzGnnuTL7ODSsIdIn86juh3gPUsD52L"
 bajar_archivo(config_id, r"config/configpcb.json")
-config = json.load("config\configpcb.json")
+with open(r"config/configpcb.json", 'r') as archivo:
+    config = json.load(archivo) 
 
 st.sidebar.header("Configuraciones PCB")
 for slice in config['slice']:
