@@ -137,7 +137,7 @@ config["TamanioTXTPublicidad"] = st.sidebar.number_input("Tamaño del texto", va
 config["Tamanio"] = st.sidebar.number_input("Tamaño de la imagen", value= config["Tamanio"])
 
 if st.sidebar.button("Guardar configuraciones"):
-    subir_archivo("config\configpcb.json","1cBIWZ9Xiw1Q5p2wxoVF7t-oL0gq7VqZW")
+    subir_archivo("config/configpcb.json","1cBIWZ9Xiw1Q5p2wxoVF7t-oL0gq7VqZW")
     st.sidebar.success("Configuraciones guardadas correctamente")
 
 st.image("imagenes/logopng.png",width=200,)
@@ -365,7 +365,7 @@ def generar_pdf(nombre_archivo, cliente, pedido, articulos, im_publicidad):
         content.append(separador1)
     else:
         bajar_archivo("1FjbvVgXGlSbW-vX4ja0lZ9buF1J9lN_F","imagenes\publicidad.png")
-        im_publicidad = "imagenes\publicidad.png"
+        im_publicidad = "imagenes/publicidad.png"
         tamanio = int(config["Tamanio"])
         separador1_width, separador1_height = ajustar_imagen(im_publicidad, tamanio*inch, tamanio*inch)
         separador1 = Image(im_publicidad, width=separador1_width, height=separador1_height)
