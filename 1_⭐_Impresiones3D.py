@@ -32,13 +32,19 @@ def login():
     credenciales = GoogleDrive(gauth)
     return credenciales
 
-def subir_archivo(ruta_archivo,id_folder,):
-    credenciales = login()
-    archivo = credenciales.CreateFile({'parents': [{"kind": "drive#fileLink",\
-                                                    "id": id_folder}]})
-    archivo['title'] = ruta_archivo.split('/')[-1]
-    archivo.SetContentFile(ruta_archivo)
-    archivo.Upload()
+# def subir_archivo(ruta_archivo,id_folder,):
+#     credenciales = login()
+#     archivo = credenciales.CreateFile({'parents': [{"kind": "drive#fileLink",\
+#                                                     "id": id_folder}]})
+#     archivo['title'] = ruta_archivo.split('/')[-1]
+#     archivo.SetContentFile(ruta_archivo)
+#     archivo.Upload()
+
+def subir_archivo(ruta_archivo, id_archivo):
+    credenciales = login()  # Autenticación
+    archivo = credenciales.CreateFile({'id': id_archivo})  # Identificar archivo por su ID
+    archivo.SetContentFile(ruta_archivo)  # Asignar el contenido del nuevo archivo
+    archivo.Upload() 
 
 # DESCARGAR UN ARCHIVO DE DRIVE POR ID
 def bajar_archivo(id_drive, ruta_descarga):
