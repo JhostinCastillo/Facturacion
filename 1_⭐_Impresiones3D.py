@@ -134,8 +134,9 @@ st.sidebar.write(f"### Publicidad")
 config["Texto de publicidad"] = st.sidebar.text_input("Marketing nivel Dios", value= config["Texto de publicidad"])
 im_publicidad = st.sidebar.file_uploader("Subir una imagen diferente para la publicidad, por defecto se pondrán las PCBs de siempre", type=["png"], key="publicidad")
 if im_publicidad is not None:
-    carpeta_id = "1FjbvVgXGlSbW-vX4ja0lZ9buF1J9lN_F"
-    subir_archivo(im_publicidad,carpeta_id)
+    with open(r"imagenes/publicidad.png", "wb") as imagen:
+        imagen.write(im_publicidad.getbuffer())
+    subir_archivo("imagenes/publicidad.png","1FjbvVgXGlSbW-vX4ja0lZ9buF1J9lN_F")
 config["TamanioTXTPublicidad"] = st.sidebar.text_input("Tamaño del texto", value= config["TamanioTXTPublicidad"])
 config["Tamanio"] = st.sidebar.text_input("Tamaño de la imagen", value= config["Tamanio"])
 
