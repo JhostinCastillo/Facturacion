@@ -41,11 +41,11 @@ def subir_archivo(ruta_archivo,id_folder,):
     archivo.Upload()
 
 # DESCARGAR UN ARCHIVO DE DRIVE POR ID
-def bajar_archivo(id_drive,ruta_descarga):
-    credenciales = login()
-    archivo = credenciales.CreateFile({'id': id_drive}) 
-    nombre_archivo = archivo['title']
-    archivo.GetContentFile(ruta_descarga + nombre_archivo)
+def bajar_archivo(id_drive, ruta_descarga):
+    credenciales = login()  # Asegúrate de que las credenciales estén funcionando
+    archivo = credenciales.CreateFile({'id': id_drive})
+    archivo.GetContentFile(ruta_descarga)  # Descarga el archivo directamente
+
 # Pagina 
 st.set_page_config(page_title="PCBs", page_icon="🚀")
 
@@ -103,7 +103,7 @@ def calcular_precios(tipopcb,hoyos,x,y,tiempo, extra, config):
     }
 
 config_id ="1WxzGnnuTL7ODSsIdIn86juh3gPUsD52L"
-bajar_archivo(config_id,"config\configpcb.json")
+bajar_archivo(config_id, r"config/configpcb.json")
 config = json.load("config\configpcb.json")
 
 st.sidebar.header("Configuraciones PCB")

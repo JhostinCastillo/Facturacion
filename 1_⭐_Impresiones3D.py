@@ -41,11 +41,10 @@ def subir_archivo(ruta_archivo,id_folder,):
     archivo.Upload()
 
 # DESCARGAR UN ARCHIVO DE DRIVE POR ID
-def bajar_archivo(id_drive,ruta_descarga):
-    credenciales = login()
-    archivo = credenciales.CreateFile({'id': id_drive}) 
-    nombre_archivo = archivo['title']
-    archivo.GetContentFile(ruta_descarga + nombre_archivo)
+def bajar_archivo(id_drive, ruta_descarga):
+    credenciales = login()  # Asegúrate de que las credenciales estén funcionando
+    archivo = credenciales.CreateFile({'id': id_drive})
+    archivo.GetContentFile(ruta_descarga)  # Descarga el archivo directamente
 
 # Pagina 
 st.set_page_config(page_title="Impresiones 3D", page_icon="⭐")
@@ -108,7 +107,7 @@ def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
     }
 
 config_id ="1re8SqtEPsPBeEcqfblZWUH4fyCO247Fi"
-bajar_archivo(config_id,"config\config.json")
+bajar_archivo(config_id, r"config/configpcb.json")
 config = json.load("config\config.json")
 
 st.sidebar.header("Configuraciones impresiones3D")
