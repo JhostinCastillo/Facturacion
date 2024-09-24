@@ -32,14 +32,6 @@ def login():
     credenciales = GoogleDrive(gauth)
     return credenciales
 
-# def subir_archivo(ruta_archivo,id_folder,):
-#     credenciales = login()
-#     archivo = credenciales.CreateFile({'parents': [{"kind": "drive#fileLink",\
-#                                                     "id": id_folder}]})
-#     archivo['title'] = ruta_archivo.split('/')[-1]
-#     archivo.SetContentFile(ruta_archivo)
-#     archivo.Upload()
-
 def subir_archivo(ruta_archivo, id_archivo):
     credenciales = login()  # Autenticación
     archivo = credenciales.CreateFile({'id': id_archivo})  # Identificar archivo por su ID
@@ -108,7 +100,7 @@ def calcular_precios(tipopcb,hoyos,x,y,tiempo, extra, config):
         "subtotal": subtotal
     }
 
-config_id ="1WxzGnnuTL7ODSsIdIn86juh3gPUsD52L"
+config_id ="1cBIWZ9Xiw1Q5p2wxoVF7t-oL0gq7VqZW"
 bajar_archivo(config_id, r"config/configpcb.json")
 with open(r"config/configpcb.json", 'r') as archivo:
     config = json.load(archivo) 

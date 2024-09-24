@@ -32,14 +32,6 @@ def login():
     credenciales = GoogleDrive(gauth)
     return credenciales
 
-# def subir_archivo(ruta_archivo,id_folder,):
-#     credenciales = login()
-#     archivo = credenciales.CreateFile({'parents': [{"kind": "drive#fileLink",\
-#                                                     "id": id_folder}]})
-#     archivo['title'] = ruta_archivo.split('/')[-1]
-#     archivo.SetContentFile(ruta_archivo)
-#     archivo.Upload()
-
 def subir_archivo(ruta_archivo, id_archivo):
     credenciales = login()  # Autenticación
     archivo = credenciales.CreateFile({'id': id_archivo})  # Identificar archivo por su ID
@@ -56,6 +48,7 @@ def bajar_archivo(id_drive, ruta_descarga):
 st.set_page_config(page_title="Impresiones 3D", page_icon="⭐")
 
 def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
+
     if peso <= 20:
         coste_material = config['materiales'][tipo_material]['0-20g']
     elif peso <= 200:
