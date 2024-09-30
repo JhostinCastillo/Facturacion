@@ -49,7 +49,6 @@ def bajar_archivo(id_drive, ruta_descarga):
 st.set_page_config(page_title="PCBs", page_icon="🚀")
 
 def calcular_precios(tipopcb,hoyos,x,y,tiempo, extra, config):
-    x += 30
     coste_mm2 = (x*y) * config["slice"][tipopcb]["mm2"]
     coste_hoyos = hoyos * config["hoyos"]
     coste_tiempo = tiempo * config["slice"][tipopcb]["tiempo"]
@@ -159,7 +158,7 @@ with st.form(key='form_articulo'):
     tipo_slice = st.selectbox("Tipo de Slice", ["1", "2"], key="slice")
     hoyos = st.number_input("Agujeros", min_value=0, key="hoyos")
     tiempo = st.number_input("Tiempo de fabricación (horas)", min_value=0.0, value= 1.0,key="tiempo")
-    x = st.number_input("Tamaño de x (mm)(+30)", min_value=0.0, key="x")
+    x = st.number_input("Tamaño de x (mm)(+30)", min_value=0.0, key="x") + 30
     y = st.number_input("Tamaño de y (mm)", min_value=0.0, key="y")
     extra = st.number_input("Coste extra", min_value=0.0, key="extra")
     imagen_pcb = st.file_uploader("Subir Imagen de la PCB (PNG/JPG)", type=["png", "jpg"], key="pcb")
