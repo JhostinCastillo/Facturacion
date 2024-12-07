@@ -42,12 +42,12 @@ def subir_archivo(ruta_archivo, id_archivo):
 
 
 def bajar_archivo(id_drive, ruta_descarga):
-    # try:
-    credenciales = login()  
+    try:
+        credenciales = login()  
         
-    # except Exception:
-    #     st.write("Mándame un punto (.) por WhatsApp.")
-    #     st.stop()
+    except Exception:
+        st.write("Mándame un punto (.) por WhatsApp.")
+        st.stop()
 
     archivo = credenciales.CreateFile({'id': id_drive})
     archivo.GetContentFile(ruta_descarga)  
