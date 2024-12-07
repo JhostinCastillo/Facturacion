@@ -43,8 +43,8 @@ def subir_archivo(ruta_archivo, id_archivo):
 
 def bajar_archivo(id_drive, ruta_descarga):
     try:
-        credenciales = login() 
         raise Exception
+        credenciales = login() 
         
     except Exception:
         st.write("Mándame un punto (.) por WhatsApp.")
