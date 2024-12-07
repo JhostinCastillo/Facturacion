@@ -12,7 +12,7 @@ import io
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from pydrive2.files import FileNotUploadedError
-from start_credentials import actualizar_credenciales
+
 
 credencialesjson = st.secrets["credenciales"]
 
@@ -46,8 +46,8 @@ def bajar_archivo(id_drive, ruta_descarga):
         credenciales = login()  
         
     except Exception:
-        actualizar_credenciales()
-        credenciales = login()  
+        st.write("Mándame un punto (.) por WhatsApp.")
+        st.stop()
 
     archivo = credenciales.CreateFile({'id': id_drive})
     archivo.GetContentFile(ruta_descarga)  
