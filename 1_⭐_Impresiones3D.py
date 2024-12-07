@@ -43,7 +43,6 @@ def subir_archivo(ruta_archivo, id_archivo):
 
 def bajar_archivo(id_drive, ruta_descarga):
     try:
-        raise Exception
         credenciales = login() 
         
     except Exception:
