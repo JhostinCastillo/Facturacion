@@ -112,6 +112,9 @@ with open(r"config/config.json", 'r') as archivo:
     config = json.load(archivo) 
 
 st.sidebar.header("Configuraciones impresiones3D")
+
+config['coste_maquina'] = st.sidebar.number_input(f"Porcentaje de máquina (DOP)", value=config['coste_maquina'])
+
 for material in config['materiales']:
     st.sidebar.write(f"### {material}")
     config['materiales'][material]['0-20g'] = st.sidebar.number_input(f"Precio por gramo (0-20g) para {material} (DOP)", value=config['materiales'][material]['0-20g'])
