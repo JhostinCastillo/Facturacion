@@ -68,7 +68,7 @@ def calcular_precios(tipo_material, peso, tiempo, coste_diseno, extra, config):
 
     total_material = coste_material * peso
 
-
+    coste_tiempo = 0
     if tiempo <= 10:
         coste_tiempo = config['tiempo']['0-10h']
     elif tiempo <= 20:
