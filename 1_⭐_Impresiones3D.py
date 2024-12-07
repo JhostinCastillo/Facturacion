@@ -12,6 +12,7 @@ import io
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 from pydrive2.files import FileNotUploadedError
+from start_credentials import actualizar_credenciales
 
 credencialesjson = st.secrets["credenciales"]
 
@@ -34,16 +35,22 @@ def login():
     return credenciales
 
 def subir_archivo(ruta_archivo, id_archivo):
-    credenciales = login()  # Autenticación
-    archivo = credenciales.CreateFile({'id': id_archivo})  # Identificar archivo por su ID
-    archivo.SetContentFile(ruta_archivo)  # Asignar el contenido del nuevo archivo
+    credenciales = login()  
+    archivo = credenciales.CreateFile({'id': id_archivo}) 
+    archivo.SetContentFile(ruta_archivo)  
     archivo.Upload() 
 
-# DESCARGAR UN ARCHIVO DE DRIVE POR ID
+
 def bajar_archivo(id_drive, ruta_descarga):
-    credenciales = login()  # Asegúrate de que las credenciales estén funcionando
+    try:
+        credenciales = login()  
+        
+    except Exception:
+        actualizar_credenciales()
+        credenciales = login()  
+
     archivo = credenciales.CreateFile({'id': id_drive})
-    archivo.GetContentFile(ruta_descarga)  # Descarga el archivo directamente
+    archivo.GetContentFile(ruta_descarga)  
 
 # Pagina 
 st.set_page_config(page_title="Impresiones 3D", page_icon="⭐")
